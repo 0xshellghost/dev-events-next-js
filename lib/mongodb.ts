@@ -2,12 +2,6 @@ import mongoose, { Mongoose } from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
-  );
-}
-
 /**
  * Global interface to cache the Mongoose connection across hot reloads
  * in the Next.js development environment. This prevents multiple connections
@@ -38,6 +32,10 @@ if (!global.mongooseCache) {
  * @returns {Promise<Mongoose>} A promise that resolves to the Mongoose instance.
  */
 async function connectToDatabase(): Promise<Mongoose> {
+  if (!MONGODB_URI) {
+    throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+  }
+
   // Return the active connection if it's already established
   if (cached.conn) {
     return cached.conn;

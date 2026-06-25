@@ -1,9 +1,16 @@
+'use client'
 import { NextPage } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-interface Props {}
+import posthog from 'posthog-js'
+
+type Props = object;
 
 const Navbar: NextPage<Props> = ({}) => {
+  const handleCreateEventClick = () => {
+    posthog.capture('create_event_nav_clicked');
+  };
+
   return(
     <header>
         <nav>
@@ -14,7 +21,7 @@ const Navbar: NextPage<Props> = ({}) => {
             <ul className='nav-links'>
                 <Link href="/">Home</Link>
                 <Link href="/events">Events</Link>
-                <Link href="/create-event">Create Event</Link>
+                <Link href="/create-event" onClick={handleCreateEventClick}>Create Event</Link>
             </ul>
         </nav>
     </header>
