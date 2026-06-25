@@ -1,17 +1,22 @@
 'use client'
 import { NextPage } from 'next'
 import Image from 'next/image'
+import posthog from 'posthog-js'
 
-interface Props {}
+type Props = object;
 
 const Explorebtn: NextPage<Props> = ({}) => {
+  const handleExploreClick = () => {
+    posthog.capture('explore_events_clicked');
+  };
+
   return (
     <div className="flex justify-center mt-7">
-      <button 
-        type='button' 
+      <button
+        type='button'
         id="explore-btn"
-        className='border-dark-200 bg-dark-100 flex w-fit cursor-pointer rounded-full border px-8 py-3.5 max-sm:w-full text-center hover:bg-dark-200 transition-colors' 
-        onClick={()=>console.log('click')}
+        className='border-dark-200 bg-dark-100 flex w-fit cursor-pointer rounded-full border px-8 py-3.5 max-sm:w-full text-center hover:bg-dark-200 transition-colors'
+        onClick={handleExploreClick}
       >
           <a href="#events" className="flex items-center justify-center gap-2 text-center w-full text-white font-semibold">
               Explore Events

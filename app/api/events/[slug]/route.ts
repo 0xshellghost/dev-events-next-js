@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Event from '@/database/event.model';
+import { getPostHogClient } from '@/lib/posthog-server';
 
 // Interface defining the expected route parameters for Next.js App Router
 interface RouteParams {
@@ -36,11 +37,31 @@ export async function GET(
 
     // If no matching event is found, return a 404 response
     if (!event) {
+      const posthog = getPostHogClient();
+      posthog.capture({
+        distinctId: 'anonymous',
+        event: 'event_not_found',
+        properties: { slug },
+      });
       return NextResponse.json(
         { error: 'Event not found' },
         { status: 404 }
       );
     }
+
+    const posthog = getPostHogClient();
+    const distinctId = request.headers.get('x-posthog-distinct-id') ?? 'anonymous';
+    posthog.capture({
+      distinctId,
+      event: 'event_detail_viewed',
+      properties: {
+        event_slug: slug,
+        event_title: (event as { title?: string }).title,
+        event_location: (event as { location?: string }).location,
+        event_date: (event as { date?: string }).date,
+        event_mode: (event as { mode?: string }).mode,
+      },
+    });
 
     // Return the successfully retrieved event
     return NextResponse.json(event, { status: 200 });
