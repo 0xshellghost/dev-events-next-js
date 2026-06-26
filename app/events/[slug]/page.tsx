@@ -106,7 +106,7 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> 
                                 The Event is offline.
                             </p>
                         )}
-                        <BookEvent eventId={eventData._id} />
+                        <BookEvent eventId={eventData._id} slug={slug} />
                     </div>
                 </aside>
             </div>

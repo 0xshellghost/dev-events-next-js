@@ -1,7 +1,7 @@
 'use client'
 import {useState,useEffect} from "react"
 
-const BookEvent=({ eventId }: { eventId: string })=>{
+const BookEvent=({ eventId,slug}: { eventId: string,slug:string})=>{
     const [name,setName]=useState("");
     const [email,setEmail]=useState("");
     const [booked,setBooked]=useState(false);
@@ -21,7 +21,7 @@ const BookEvent=({ eventId }: { eventId: string })=>{
             const res = await fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, eventId })
+                body: JSON.stringify({ eventId,slug,name,email })
             });
 
             const data = await res.json();

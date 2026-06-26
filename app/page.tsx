@@ -18,7 +18,7 @@ const Page = async() => {
       <h1 className='text-center'>The Hub for Every Dev Event<br/>Event You Can't Miss!</h1>
       <p className='text-center mt-5'>Hackathons,Meetups, and Conferences, All in one place</p>
       <Explorebtn/>
-      <div className='mt-20 space-y-7'>
+      <div id="events" className='mt-20 space-y-7'>
         <h3>Featured Events</h3>
         <ul className='events grid md:grid-cols-3 gap-10 sm:grid-cols-2 grid-cols-1 list-none'>
           {events.map((event)=>(
