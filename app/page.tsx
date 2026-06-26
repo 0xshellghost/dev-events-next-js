@@ -3,15 +3,12 @@ import EventCard from './components/EventCard'
 import Explorebtn from './components/Explorebtn'
 import { IEvent } from '@/database'
 
-const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL;
+import { getAllEvents } from '@/lib/actions/event.actions';
 
 const Page = async() => {
   'use cache';
-  cacheLife('hours')
-  const response=await fetch(`${BASE_URL}/api/events`);
-  
-  // The API returns an array directly, not an object with an 'events' property
-  const events: IEvent[] = await response.json();
+  cacheLife('hours');
+  const events: IEvent[] = await getAllEvents();
 
   return (
     <section>

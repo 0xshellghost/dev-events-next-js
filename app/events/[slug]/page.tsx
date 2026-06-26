@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import BookEvent from "../../components/BookEvent";
-import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
+import { getSimilarEventsBySlug, getEventBySlug } from "@/lib/actions/event.actions";
 import EventCard from "@/app/components/EventCard";
 import { IEvent } from "@/database";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 const EventDetailItem = ({ icon, alt, label }: { icon: string; alt: string; label: string }) => {
     return (
         <div className="flex-row-gap-2 items-center">
@@ -31,13 +31,21 @@ const EventAgenda = ({ agendaItems }: { agendaItems: string[] }) => {
     )
 }
 
+
+
 const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
     const { slug } = await params;
-    const SimilarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
-    const request = await fetch(`${BASE_URL}/api/events/${slug}`)
+    
+    // Fetch data directly from the database to avoid build-time fetch errors
+    const [SimilarEvents, eventData] = await Promise.all([
+        getSimilarEventsBySlug(slug),
+        getEventBySlug(slug)
+    ]);
 
-    // The API returns the event object directly, not wrapped in an { event: ... } property
-    const eventData = await request.json();
+    if (!eventData) {
+        return notFound();
+    }
+
     const { description, image, title, date, time, venue, mode, agenda, overview, location, organizer, audience, tags } = eventData;
 
     if (!description) {

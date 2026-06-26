@@ -2,15 +2,15 @@ import { cacheLife } from 'next/cache';
 import EventCard from '../components/EventCard';
 import { IEvent } from '@/database';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+import { getAllEvents } from '@/lib/actions/event.actions';
 
 const EventsPage = async () => {
   'use cache';
   cacheLife('hours');
   
-  const response = await fetch(`${BASE_URL}/api/events`);
+  const events: IEvent[] = await getAllEvents();
   
-  if (!response.ok) {
+  if (!events) {
     return (
       <section className="mt-20">
         <h1 className="text-center font-semibold text-2xl">All Events</h1>
@@ -18,8 +18,6 @@ const EventsPage = async () => {
       </section>
     );
   }
-
-  const events: IEvent[] = await response.json();
 
   return (
     <section className="mt-10 mb-20">
