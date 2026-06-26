@@ -33,3 +33,20 @@ export const getSimilarEventsBySlug=async(slug:string)=>{
         return [];
     }
 }
+
+import { revalidatePath } from 'next/cache';
+
+export const deleteEventBySlug = async (slug: string) => {
+    try {
+        await connectDB();
+        const deletedEvent = await Event.findOneAndDelete({ slug });
+        if (deletedEvent) {
+            revalidatePath('/', 'layout');
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error("Error deleting event:", error);
+        return false;
+    }
+}

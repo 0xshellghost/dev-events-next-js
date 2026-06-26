@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import BookEvent from "../../components/BookEvent";
+import DeleteEventButton from "../../components/DeleteEventButton";
 import { getSimilarEventsBySlug, getEventBySlug } from "@/lib/actions/event.actions";
 import EventCard from "@/app/components/EventCard";
 import { IEvent } from "@/database";
@@ -116,6 +117,7 @@ async function EventContent({ params }: { params: Promise<{ slug: string }> }) {
                             </p>
                         )}
                         <BookEvent eventId={eventData._id} slug={slug} />
+                        <DeleteEventButton slug={slug} />
                     </div>
                 </aside>
             </div>

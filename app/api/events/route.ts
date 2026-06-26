@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import connectToDatabase from '@/lib/mongodb';
 import { Event } from '@/database';
 import { v2 as cloudinary } from 'cloudinary';
@@ -33,6 +34,9 @@ export async function POST(request: NextRequest) {
     // The pre-save hook will automatically handle validation, slug generation, and formatting
     const newEvent = new Event(body);
     await newEvent.save();
+
+    // Invalidate the cache for the home page and events page
+    revalidatePath('/', 'layout');
 
     // Return the newly created event with a 201 Created status
     return NextResponse.json(newEvent, { status: 201 });
