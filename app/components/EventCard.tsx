@@ -25,19 +25,19 @@ const EventCard: NextPage<Props> = ({title,image,slug,location,date,time}:Props)
 
   return (
     <Link href={`/events/${slug}`} id="event-card" onClick={handleClick}>
-        <Image src={image} alt={title} width={410} height={300} className='poster'/>
+        <Image src={image} alt={title} width={410} height={300} className='poster' style={{ width: '100%', height: 'auto' }}/>
         <div className="flex flex-row gap-2 items-center">
-            <Image src="/icons/pin.svg" alt="location-icon" width={14} height={14} priority/>
+            <Image src="/icons/pin.svg" alt="location-icon" width={14} height={14} priority style={{ width: 'auto', height: 'auto' }}/>
             <p className='text-light-200 text-sm'>{location}</p>
         </div>
         <p className='title'>{title}</p>
         <div className="datetime">
           <div>
-            <Image src="/icons/calendar.svg" alt="date-icon" width={14} height={14} priority/>
-            <p>{date}</p>
+            <Image src="/icons/calendar.svg" alt="date-icon" width={14} height={14} priority style={{ width: 'auto', height: 'auto' }}/>
+            <p>{date ? new Date(date).toLocaleDateString('en-US') : ''}</p>
           </div>
           <div>
-            <Image src="/icons/clock.svg" alt="time-icon" width={14} height={14} priority/>
+            <Image src="/icons/clock.svg" alt="time-icon" width={14} height={14} priority style={{ width: 'auto', height: 'auto' }}/>
             <p>{time}</p>
           </div>
         </div>

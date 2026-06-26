@@ -1,41 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
-import Event from '@/database/event.model';
+import { Event, IEvent } from '@/database';
 import { getPostHogClient } from '@/lib/posthog-server';
 
-// Interface defining the expected route parameters for Next.js App Router
+// Next.js 15+ dynamic route parameters are asynchronous
 interface RouteParams {
   params: Promise<{ slug: string }>;
 }
 
 /**
- * GET API Route to fetch an event by its unique slug.
- * Endpoint: /api/events/[slug]
+ * GET /api/events/[slug]
+ * Retrieves the details of a specific event by its slug.
  */
 export async function GET(
   request: NextRequest,
   { params }: RouteParams
 ) {
   try {
-    // In Next.js 15+, dynamic route params are asynchronous and must be awaited.
+    // Await params as required by Next.js 15 App Router
     const { slug } = await params;
 
-    // Validate that the slug parameter was provided
-    if (!slug) {
+    // Validate the presence of the slug
+    if (!slug || typeof slug !== 'string') {
       return NextResponse.json(
-        { error: 'Missing slug parameter' },
+        { error: 'Bad Request: Missing or invalid slug parameter.' },
         { status: 400 }
       );
     }
 
-    // Ensure database connection is active
+    // Ensure connection to MongoDB
     await connectToDatabase();
 
-    // Query the database for the event matching the provided slug
-    // Use .lean() to return a plain JavaScript object instead of a Mongoose document
-    const event = await Event.findOne({ slug }).lean();
+    // Query the database for the specific event
+    // .lean() improves performance by returning a POJO (Plain Old JavaScript Object)
+    const event = await Event.findOne({ slug }).lean() as IEvent | null;
 
-    // If no matching event is found, return a 404 response
+    // Handle the case where the event does not exist
     if (!event) {
       const posthog = getPostHogClient();
       posthog.capture({
@@ -43,35 +43,39 @@ export async function GET(
         event: 'event_not_found',
         properties: { slug },
       });
+      
       return NextResponse.json(
-        { error: 'Event not found' },
+        { error: `Not Found: No event found with slug '${slug}'.` },
         { status: 404 }
       );
     }
 
+    // Track successful event view via PostHog
     const posthog = getPostHogClient();
-    const distinctId = request.headers.get('x-posthog-distinct-id') ?? 'anonymous';
+    const distinctId = request.headers.get('x-posthog-distinct-id') || 'anonymous';
+    
     posthog.capture({
       distinctId,
       event: 'event_detail_viewed',
       properties: {
         event_slug: slug,
-        event_title: (event as { title?: string }).title,
-        event_location: (event as { location?: string }).location,
-        event_date: (event as { date?: string }).date,
-        event_mode: (event as { mode?: string }).mode,
+        event_title: event.title,
+        event_location: event.location,
+        event_date: event.date,
+        event_mode: event.mode,
       },
     });
 
-    // Return the successfully retrieved event
+    // Return the event data successfully
     return NextResponse.json(event, { status: 200 });
+    
   } catch (error) {
     // Log the error for server-side debugging
-    console.error(`Error fetching event by slug:`, error);
+    console.error('[API Error] Fetching event by slug failed:', error);
 
-    // Return a generic error message to the client
+    // Return a standardized 500 internal server error response
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Internal Server Error: An unexpected error occurred while fetching the event.' },
       { status: 500 }
     );
   }
