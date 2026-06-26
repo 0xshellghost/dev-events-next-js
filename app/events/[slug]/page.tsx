@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import BookEvent from "../../components/BookEvent";
@@ -33,7 +34,7 @@ const EventAgenda = ({ agendaItems }: { agendaItems: string[] }) => {
 
 
 
-const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
+async function EventContent({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
     
     // Fetch data directly from the database to avoid build-time fetch errors
@@ -130,4 +131,10 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> 
     )
 }
 
-export default EventDetailsPage
+export default function EventDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
+    return (
+        <Suspense fallback={<div className="mt-20 text-center text-light-200">Loading event details...</div>}>
+            <EventContent params={params} />
+        </Suspense>
+    );
+}
