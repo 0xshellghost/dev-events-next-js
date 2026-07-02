@@ -1,8 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevEvents
+
+DevEvents is a full-stack Next.js application designed to discover, track, and manage developer events.
+
+## Tech Stack
+
+- **Framework:** Next.js 15+
+- **Styling:** Tailwind CSS
+- **Database:** MongoDB (via Mongoose)
+- **Image Hosting:** Cloudinary
+- **Analytics:** PostHog
 
 ## Getting Started
 
-First, run the development server:
+First, ensure you have set up your environment variables based on `.env.example`:
+
+1. Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+2. Fill in the required secrets in `.env.local` (MongoDB, PostHog, Cloudinary).
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -15,10 +33,6 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
 
